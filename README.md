@@ -9,6 +9,7 @@ An example file containing instances for one-dimensional cutting stock problems 
 
 ## Requirements
 All of these can be installed using conda:
+
     * gurobipy: Gurobi for Python
     * numpy
     * mpi4py: MPI for Python package
