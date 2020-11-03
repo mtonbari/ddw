@@ -22,9 +22,7 @@ comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
 MPISolve = comm.Get_size() > 1
 
-filepath = "./40_5/1_20"  # 5 lengths
-# filepath = "./mslcsp/m100M4l0.1_15b1_100L5000g500B625_2500"  # 4 lengths
-# filepath = "./mslcsp/m150M4l0.1_75b1_100L5000g500B625_2500"  # 4 lengths
+filepath = "./data/1_20"  # 5 stock lengths
 instance_num = 1
 method = "admm"
 
@@ -70,7 +68,6 @@ if rank == 0:
     normalizedDiff = np.divide(diff, demands)
     feasViol = max(np.max(normalizedDiff), 0)
 
-    print("##################")
     print("Objective Value:", obj)
     print("Time to solve:", runtime)
     print("Feasibility violation:", feasViol)

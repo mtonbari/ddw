@@ -85,10 +85,8 @@ if __name__ == '__main__':
         comm.barrier()
         if rank == 0:
             t1 = time.time()
-            print(method, "starting...")
         ddw.solve()
         if rank == 0:
-            print(method, "done.")
             sys.stdout.flush()
             t2 = time.time()
             runtime = t2 - t1
@@ -99,8 +97,8 @@ if __name__ == '__main__':
             diff = np.subtract(rhs, lhs)
             normalizedDiff = np.divide(diff, rhs)
             feasViol = max(np.max(normalizedDiff), 0)
+            print("Model solved in", runtime)
             print("Objective Value:", objVal)
-            print("Runtime:", runtime)
             print("Feasibility violation:", feasViol)
             sys.stdout.flush()
     elif method == "g":
@@ -108,6 +106,3 @@ if __name__ == '__main__':
         objVal = gurobiOut['objval']
         runtime = gurobiOut["runtime"]
         print("Gurobi objective value:", objVal)
-
-        filename = "gurobi_output.csv"
-        filepath = os.path.join(output_path, filename)
