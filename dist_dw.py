@@ -128,6 +128,12 @@ class DistDW():
         self.tolPrimal = self.params.tolPrimalStart
         self.tolDual = self.params.tolDualStart
         dwDone = False
+        if rank == 0:
+            print("##########################################")
+            print("Starting tolerances:")
+            print("\t Primal ADMM tolerance:", self.tolPrimal)
+            print("\t Dual ADMM tolerance:", self.tolDual)
+            sys.stdout.flush()
         while(not dwDone):
             admmIter = admm.solve(self)
             # Solve princing subproblems and add new column if reduced cost
@@ -162,21 +168,29 @@ class DistDW():
 
             # Check terminating conditions
             if rank == 0 and self.method == "admm":
+                tolChange = False
                 if ((isDualFeasibleSum == self.numBlocks or admmIter == 1)
-                    and self.tolPrimal > self.params.tolPrimalEnd):
-                    print('tolprimal' + str(self.tolPrimal))
+                        and self.tolPrimal > self.params.tolPrimalEnd):
                     self.tolPrimal = self.tolPrimal / 10.0
+                    tolChange = True
                 if ((isDualFeasibleSum == self.numBlocks or admmIter == 1)
-                    and self.tolDual > self.params.tolDualEnd):
-                    print('toldual' + str(self.tolDual))
+                        and self.tolDual > self.params.tolDualEnd):
                     self.tolDual = self.tolDual / 10.0
+                    tolChange = True
                 elif ((isDualFeasibleSum == self.numBlocks or admmIter == 1)
-                      and self.tolPrimal == self.params.tolPrimalEnd
-                      and self.tolDual == self.params.tolDualEnd):
+                        and self.tolPrimal == self.params.tolPrimalEnd
+                        and self.tolDual == self.params.tolDualEnd):
                     dwDone = True
+                if not dwDone and tolChange:
+                    print("##############")
+                    print("Tolerances updated...")
+                    print("\t Primal tolerance:", self.tolPrimal)
+                    print("\t Dual tolerance:", self.tolDual)
             if self.MPISolve:
                 dwDone = self.comm.bcast(dwDone, root=0)
             dwIter += 1
+        if rank == 0:
+            print("##########################################")
         return
 
     def solveCentral(self):
