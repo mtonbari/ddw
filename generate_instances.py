@@ -11,7 +11,7 @@ import helpers as h
 from numpy.random import RandomState
 
 
-def generate_random_block(numLinkConstrs, numBlockConstrs, numVars,
+def generateRandomBlock(numLinkConstrs, numBlockConstrs, numVars,
                           blockID,
                           constrBounds=[-10, 20],
                           constrBlockBounds=[-10, 20],
@@ -43,7 +43,7 @@ def generate_random_block(numLinkConstrs, numBlockConstrs, numVars,
         object.
     linkRowTotals : array
         Row sum of coefficients of linking constraints. This is needed to
-        randomly generate reasonable right-hand sides in the get_link_rhs
+        randomly generate reasonable right-hand sides in the getLinkRHS
         function.
     """
     if prng is None:
@@ -79,7 +79,7 @@ def generate_random_block(numLinkConstrs, numBlockConstrs, numVars,
     return blockData, linkRowTotals
 
 
-def get_link_rhs(rowTotals, prng=None):
+def getLinkRHS(rowTotals, prng=None):
     """
     Randomly generate the right-hand side of the linking constraints.
     
