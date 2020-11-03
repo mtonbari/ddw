@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """
 Example script to run dist_dw and solve cutting stock instances.
+
+Example command to run: mpiexec -np 5 python runCSP.py.
 """
 import numpy as np
-import generateInstances as gi
+import generate_instances as gi
 from dist_dw import DistDW
 from mpi4py import MPI
 import time

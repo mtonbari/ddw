@@ -1,11 +1,14 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
+Example script to create and solve randomly generated instances.
+
+Example command to run: mpiexec -np 5 python runDistDW.py.
 """
 
 
 import numpy as np
 from argparse import ArgumentParser
-import generateInstances as gi
+import generate_instances as gi
 from dist_dw import DistDW
 import helpers as h
 from mpi4py import MPI
@@ -21,13 +24,11 @@ if __name__ == '__main__':
     rank = comm.Get_rank()
 
     parser = ArgumentParser()
-
     parser.add_argument('-g', help='Solve using Gurobi', action='store_true')
     args = vars(parser.parse_args())
     if args["g"]:
         assert comm.Get_size() == 1
-    if rank == 0:
-        print(args)
+
     output_path = os.path.join("output", "random_instances")
 
     numBlocks = [2]  #, 4, 8, 10, 15]
