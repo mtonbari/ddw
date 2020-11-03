@@ -18,7 +18,7 @@ class Block():
     """
     General block class to model any block-structured problem.
     """
-    def __init__(self, numBlocks, linkingData, blockData, method="admm"):
+    def __init__(self, numBlocks, linkingData, blockData):
         """
         Parameters
         ----------
@@ -46,7 +46,6 @@ class Block():
                 -"varType" to a list of Gurobi types for the block's
                  variables
         """
-        self.method = method
         self.linkingData = linkingData
         self.numBlocks = numBlocks
         self.numBlockConstrs = len(blockData['blockSense'])

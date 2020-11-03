@@ -11,24 +11,26 @@ import helpers as h
 from numpy.random import RandomState
 
 
-def generate_random_block(num_link_constrs, num_block_constrs, num_vars,
-                          block_id,
-                          constr_bounds=[-10, 20],
-                          constr_block_bounds=[-10, 20],
+def generate_random_block(numLinkConstrs, numBlockConstrs, numVars,
+                          blockID,
+                          constrBounds=[-10, 20],
+                          constrBlockBounds=[-10, 20],
                           cost_bounds=[-10, 30], prng=None):
     """
     Generate blocks with random constraint matrices and random costs.
 
-    The returned block_data can be used when initializing Block objects.
+    The returned blockData can be used when initializing Block objects.
     
     Parameters
     ----------
-    num_link_constrs : int
+    numLinkConstrs : int
         Number of linking constraints.
-    num_block_constrs : int
+    numBlockConstrs : int
         Number of local constraints for this block.
-    num_vars : int
+    numVars : int
         Number of variables for this block.
+    blockID : int
+        If prng is None, blockID is used as the random seed.
     constrs_bounds, constrs_block_bounds, cost_bounds : list or tuple
         Contains two values: a lowerbound and upperbound for coeffiencts in the
         linking constraints, local constraints and cost vector, respectively.
@@ -36,69 +38,76 @@ def generate_random_block(num_link_constrs, num_block_constrs, num_vars,
 
     Returns
     -------
-    block_data : dict
+    blockData : dict
         Dictionary contains block data that can be used to initialize a Block
         object.
-    link_row_totals : array
+    linkRowTotals : array
         Row sum of coefficients of linking constraints. This is needed to
         randomly generate reasonable right-hand sides in the get_link_rhs
         function.
     """
     if prng is None:
-        prng = RandomState(block_id)
-    link_constrs_mat = prng.randint(constr_bounds[0], constr_bounds[1],
-                                    size=(num_link_constrs, num_vars))
-    block_constrs_dim = (num_block_constrs, num_vars)
-    block_constrs_mat = prng.randint(
-        constr_block_bounds[0], constr_block_bounds[1], size=block_constrs_dim)
-    block_costs = prng.randint(cost_bounds[0], cost_bounds[1], size=num_vars)
-    block_rhs = np.zeros(num_block_constrs)
-    for i in range(num_block_constrs):
-        row_total = block_constrs_mat[i, :].sum(dtype='float')
+        prng = RandomState(blockID)
+    linkConstrsMat = prng.randint(constrBounds[0], constrBounds[1],
+                                    size=(numLinkConstrs, numVars))
+    blockConstrsDim = (numBlockConstrs, numVars)
+    blockConstrsMat = prng.randint(
+        constrBlockBounds[0], constrBlockBounds[1], size=blockConstrsDim)
+    block_costs = prng.randint(cost_bounds[0], cost_bounds[1], size=numVars)
+    block_rhs = np.zeros(numBlockConstrs)
+    for i in range(numBlockConstrs):
+        row_total = blockConstrsMat[i, :].sum(dtype='float')
         if row_total > 0:
             block_rhs[i] = prng.randint(row_total * 2, row_total * 3)
         elif row_total < 0:
             block_rhs[i] = prng.randint(row_total * 3, row_total * 2)
         else:
             block_rhs[i] = 0
-    link_row_totals = np.zeros(num_link_constrs)
-    for i in range(num_link_constrs):
-        row = link_constrs_mat[i, :]
-        link_row_totals[i] = np.sum(row)
-    block_data = {}
-    block_data["An"] = link_constrs_mat
-    block_data["Bn"] = block_constrs_mat
-    block_data["bn"] = block_rhs
-    block_data["cn"] = block_costs
-    block_data["blockSense"] = ["<"] * num_block_constrs
-    block_data["lb"] = [0] * num_vars
-    block_data["ub"] = [30] * num_vars
-    block_data["varType"] = ['C'] * num_vars
-    return block_data, link_row_totals
+    linkRowTotals = np.zeros(numLinkConstrs)
+    for i in range(numLinkConstrs):
+        row = linkConstrsMat[i, :]
+        linkRowTotals[i] = np.sum(row)
+    blockData = {}
+    blockData["An"] = linkConstrsMat
+    blockData["Bn"] = blockConstrsMat
+    blockData["bn"] = block_rhs
+    blockData["cn"] = block_costs
+    blockData["blockSense"] = ["<"] * numBlockConstrs
+    blockData["lb"] = [0] * numVars
+    blockData["ub"] = [30] * numVars
+    blockData["varType"] = ['C'] * numVars
+    return blockData, linkRowTotals
 
 
-def get_link_rhs(row_totals, prng=None):
+def get_link_rhs(rowTotals, prng=None):
     """
     Randomly generate the right-hand side of the linking constraints.
     
-    row_totals : array
+    Parameters
+    ----------
+    rowTotals : array
         Row sum of coefficients of linking constraints.
     prng : RandomState, optional 
+    
+    Returns
+    -------
+    linkRHS : numpy 1-D array
+        Randomly generated right-hand side of the linking constraints.
     """
     if prng is None:
         prng = RandomState(0)
-    # Sum components if row_totals is a list of arrays
-    if isinstance(row_totals, list):
-        row_totals = sum(row_totals[i] for i in range(len(row_totals)))
-    link_rhs = np.zeros((len(row_totals), 1))
-    for i, t in enumerate(row_totals):
+    # Sum components if rowTotals is a list of arrays
+    if isinstance(rowTotals, list):
+        rowTotals = sum(rowTotals[i] for i in range(len(rowTotals)))
+    linkRHS = np.zeros((len(rowTotals), 1))
+    for i, t in enumerate(rowTotals):
         if t > 0:
-            link_rhs[i] = prng.randint(t * 2, t * 3)
+            linkRHS[i] = prng.randint(t * 2, t * 3)
         elif t < 0:
-            link_rhs[i] = prng.randint(t * 3, t * 2)
+            linkRHS[i] = prng.randint(t * 3, t * 2)
         else:
-            link_rhs[i] = 0
-    return link_rhs
+            linkRHS[i] = 0
+    return linkRHS
 
 
 def test():
@@ -136,7 +145,7 @@ def test():
     return linkingData, blockData
 
 
-def generateCSP(filepath, instanceNum=1, num_add_stock_lengths=0, prng=None):
+def generateCSP(filepath, instanceNum=1, numAdditionalLengths=0, prng=None):
     """Read and parse a CSP instance.
     
     Parameters
@@ -145,7 +154,7 @@ def generateCSP(filepath, instanceNum=1, num_add_stock_lengths=0, prng=None):
         Path to file containing instances.
     instanceNum : int
         Instance number to parse within file.
-    num_add_stock_lengths : int, optional
+    numAdditionalLengths : int, optional
         Number of stock lengths to add to the problem. Default is 0.
     prng : numpy.RandomState
 
@@ -189,9 +198,9 @@ def generateCSP(filepath, instanceNum=1, num_add_stock_lengths=0, prng=None):
                     elif counter >= numItems + 1:
                         stockLengths.append(int(s[0]))
                         stockSupplies.append(int(s[1]))
-    min_length = min(stockLengths)
-    max_length = max(stockLengths)
+    minLength = min(stockLengths)
+    maxLength = max(stockLengths)
     new_stock_lengths = prng.randint(
-        min_length, max_length + 1, num_add_stock_lengths).tolist()
+        minLength, maxLength + 1, numAdditionalLengths).tolist()
     stockLengths += new_stock_lengths
     return stockLengths, weights, demands
