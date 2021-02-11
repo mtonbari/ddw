@@ -19,4 +19,4 @@ To solve the algorithms in parallel, an MPI implementation such as MPICH must be
     * Cutting stock instances - http://www.math.tu-dresden.de/~capad/
 
 ## Publication
-Mohamed El Tonbari and Shabbir Ahmed, [Distributed Dantzig-Wolfe Decomposition](https://arxiv.org/pdf/1905.03309.pdf), 2019
+Mohamed El Tonbari and Shabbir Ahmed, [Consensus-Based Dantzig-Wolfe Decomposition](https://arxiv.org/pdf/1905.03309.pdf), 2021
