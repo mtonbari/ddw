@@ -1,5 +1,5 @@
 # Distributed Dantzig-Wolfe Decomposition
-A parallel implementation of distributed Dantzig-Wolfe decomposition, where the master is solved in a distributed fashion using ADMM. The classical Dantzig-Wolfe algorithm where the master is solved centrally is also implemented. Parallelization is done using MPI.
+A parallel implementation of a consensus-based Dantzig-Wolfe decomposition algorithm, where the master is solved using consensus-based ADMM. The classical Dantzig-Wolfe algorithm where the master is solved centrally is also implemented. Parallelization is done using MPI.
 
 ## Quickstart Examples:
     * run_csp.py: script to read and solve cutting-stock test instances.
